@@ -7,7 +7,7 @@ TARGET = lab1_file_transfer
 CC = gcc
 CFLAGS = -Wall -I./inc
 
-all: $(TARGET)
+all: mkdir $(TARGET)
 	@echo "Completed!!!"
 
 ./obj/%.o: ./src/%.c
@@ -15,6 +15,9 @@ all: $(TARGET)
 
 $(TARGET): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
+
+mkdir:
+	mkdir -p ./obj
 
 clean:
 	find ${OBJ} -name *.o -exec rm -f lab1_file_transfer {} \;
