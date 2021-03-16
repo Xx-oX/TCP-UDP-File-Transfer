@@ -11,7 +11,7 @@ all: $(TARGET)
 	@echo "Completed!!!"
 
 ./obj/%.o: ./src/%.c
-	$(CC) -c $< $(CFLAGS) -o $@
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 $(TARGET): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
