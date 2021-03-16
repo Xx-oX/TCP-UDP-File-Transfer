@@ -1,17 +1,25 @@
-all: lab1_file_transfer
-#variables
-objects := lab1_file_transfer.o functions.o
+SRC = $(wildcard ./src/*.c)
+DIR = $(notdir $(SRC))
+OBJ = $(patsubst %.c,./obj/%.o,$(DIR))
 
-lab1_file_transfer: $(objects)
-	gcc -o lab1_file_transfer $(objects)
+TARGET = lab1_file_transfer
 
-%.o: %.c functions.h
-	gcc -c $<
+CC = gcc
+CFLAGS = -Wall -I./inc
 
-.PHONY: clean
+all: $(TARGET)
+	@echo "Completed!!!"
+
+./obj/%.o: ./src/%.c
+	$(CC) -c $< $(CFLAGS) -o $@
+
+$(TARGET): $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS)
+
 clean:
-	rm *.o lab1_file_transfer
+	find ${OBJ} -name *.o -exec rm -f lab1_file_transfer {} \;
 
-.PHONY: clear
 clear:
 	rm *_receive
+
+.PHONY: clean clear
