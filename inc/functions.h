@@ -15,12 +15,14 @@
 #define BACKLOG 5 // length of listening queue
 #define BUFFER_SIZE 16384
 
+/*data structure used to store socket info*/
 typedef struct {
     in_addr_t ip;
     int port;
     char file_path[256];
 } arguments;
 
+/*data structure used to store file info*/
 typedef struct {
     char path[256];
     uint64_t size;

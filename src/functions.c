@@ -96,6 +96,8 @@ void tcp_send(arguments arg)
         time(&now);
         printf("100%%, %s", ctime(&now));    
     }
+
+    /*print transfer info*/
     printf("Total trans time: %ldms\n", (timer_end - timer_start) / (CLOCKS_PER_SEC/1000));
     printf("File size: %ldMb\n", file_stat.st_size / 1048576);
 
@@ -185,6 +187,8 @@ void tcp_recv(arguments arg)
         time(&now);
         printf("100%%, %s", ctime(&now));    
     }
+
+    /*print transfer info*/
     printf("Total trans time: %ldms\n", (timer_end - timer_start) / (CLOCKS_PER_SEC/1000));
     printf("File size: %ldMb\n", file_size / 1048576);
 
@@ -193,11 +197,9 @@ void tcp_recv(arguments arg)
     fclose(file_ptr);
 }
 
-
 /****
 TODO: solve the stuck problem when increasing buffer size (due to loss of package)
 ****/
-
 void udp_send(arguments arg)
 {
     /*variable declaration*/
@@ -255,10 +257,6 @@ void udp_send(arguments arg)
     /*send file by cutting into serveral parts*/
     while(!feof(file_ptr))
     {
-        // waits for request
-        n_bytes = recvfrom(sockfd, buf, BUFFER_SIZE, 0, (struct sockaddr *)&info, &info_len);
-        if(strcmp(buf, "XD") == 0)
-        {
             // read data from file
             n_bytes = fread(buf, sizeof(char), sizeof(buf), file_ptr);
             // send data
@@ -283,20 +281,13 @@ void udp_send(arguments arg)
                 time(&now);
                 printf("75%%, %s", ctime(&now));
                 quarter++;    
-            }
-        }
-        else
-            error("[ERROR]Wrong transfer request!!!\n");        
+            }    
         
         bzero(buf, BUFFER_SIZE);
     }    
 
     /*send transfer end request*/    
-    n_bytes = recvfrom(sockfd, buf, BUFFER_SIZE, 0, (struct sockaddr *)&info, &info_len);
-    if(strcmp(buf, "XD") == 0)
-        sendto(sockfd, "End", 3, 0, (struct sockaddr *)&info, sizeof(info));
-    else
-        error("[ERROR]Wrong transfer request!!!\n");
+    sendto(sockfd, "End", 3, 0, (struct sockaddr *)&info, sizeof(info));
 
     timer_end = clock();
     if(quarter == 3 || file_stat.st_size < BUFFER_SIZE){
@@ -304,6 +295,8 @@ void udp_send(arguments arg)
         time(&now);
         printf("100%%, %s", ctime(&now));    
     }
+
+    /*print transfer info*/
     printf("Total trans time: %ldms\n", (timer_end - timer_start) / (CLOCKS_PER_SEC/1000));
     printf("File size: %ldMb\n", file_stat.st_size / 1048576);
 
@@ -354,8 +347,6 @@ void udp_recv(arguments arg)
     /*receive file*/
     while(1){
         bzero(buf, BUFFER_SIZE);
-        // send request
-        sendto(sockfd, "XD", 2, 0, (struct sockaddr *)&serv_info, info_len);
         
         // receive data
 		n_bytes = recvfrom(sockfd, buf, BUFFER_SIZE, 0, (struct sockaddr *)&serv_info, &info_len);    
@@ -396,8 +387,11 @@ void udp_recv(arguments arg)
         time(&now);
         printf("100%%, %s", ctime(&now));    
     }
+
+    /*print transfer info*/
     printf("Total trans time: %ldms\n", (timer_end - timer_start) / (CLOCKS_PER_SEC/1000));
-    printf("File size: %ldMb\n", file_size / 1048576);
+    printf("File size: %dMb\n", trans_bytes / 1048576);
+    printf("Packet loss rate: %2f %%\n", 100 - ((double)trans_bytes / (double)file_size * 100));
     
     /*end of connection*/
     close(sockfd);
