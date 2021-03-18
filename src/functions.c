@@ -257,31 +257,31 @@ void udp_send(arguments arg)
     /*send file by cutting into serveral parts*/
     while(!feof(file_ptr))
     {
-            // read data from file
-            n_bytes = fread(buf, sizeof(char), sizeof(buf), file_ptr);
-            // send data
-		    sendto(sockfd, buf, n_bytes, 0, (struct sockaddr *)&info, sizeof(info));
-            // printf("%d %ld\n", n_bytes, sizeof(buf));
+        // read data from file
+        n_bytes = fread(buf, sizeof(char), sizeof(buf), file_ptr);
+        // send data
+		sendto(sockfd, buf, n_bytes, 0, (struct sockaddr *)&info, sizeof(info));
+        // printf("%d %ld\n", n_bytes, sizeof(buf));
             
-            // calculate transfer progress
-            trans_bytes += n_bytes;
-            int percent = ((double)trans_bytes/(double)file_stat.st_size)*100 + 0.5;
+        // calculate transfer progress
+        trans_bytes += n_bytes;
+        int percent = ((double)trans_bytes/(double)file_stat.st_size)*100 + 0.5;
 
-            if(percent == 25 && quarter == 0){
-                time(&now);
-                printf("25%%, %s", ctime(&now));
-                quarter++;    
-            }
-            if(percent == 50 && quarter == 1){
-                time(&now);
-                printf("50%%, %s", ctime(&now));
-                quarter++;    
-            }
-            if(percent == 75 && quarter == 2){
-                time(&now);
-                printf("75%%, %s", ctime(&now));
-                quarter++;    
-            }    
+        if(percent == 25 && quarter == 0){
+            time(&now);
+            printf("25%%, %s", ctime(&now));
+            quarter++;    
+        }
+        if(percent == 50 && quarter == 1){
+            time(&now);
+            printf("50%%, %s", ctime(&now));
+            quarter++;    
+        }
+        if(percent == 75 && quarter == 2){
+            time(&now);
+            printf("75%%, %s", ctime(&now));
+            quarter++;    
+        }    
         
         bzero(buf, BUFFER_SIZE);
     }    
